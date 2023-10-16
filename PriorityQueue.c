@@ -9,19 +9,44 @@ int Priority(struct Queue *);  // Сортировка элементов в с�
 struct Queue *Pop(struct Queue *);   // Чтение элемента из очереди с последующим удалением
 
 int res = 0;    // Результат извлеения из очереди
-int *array;
+int *array; // Указатель на массив с приоритетами
 
 
 int main()
 {
-    int a = 10;
+    //int a = 10;
+    int elem = 0, prio = 0, cont = 0, i = 0;
+
+    printf("Enter element and priority: ");
+    scanf("%d%d", &elem, &prio);
+    struct Queue *list = init(elem, prio);
+    printf("Continue(any integer) or not(0): ");
+    scanf("%d", &cont);
+
+    if(cont == 0) goto ret;
+    else goto entering;
+
+
+    entering:
+    while (cont != 0)
+    {
+    printf("Enter element and priority: ");
+    scanf("%d%d", &elem, &prio);
+    Push(&list, elem, prio);
+    i++;
+    printf("Continue(any intrger) or not(0): ");
+    scanf("%d", &cont);
+    }
+    goto print;
+
 
     // Третьим параметром Push() введите приоритет элемента
-    struct Queue *list = init(a, 11);   // Инициализация очереди
+    /*struct Queue *list = init(a, 11);   // Инициализация очереди
     Push(&list, 5, 3); // Добавление значения в очередь
     Push(&list, 8, 1);
     Push(&list, 6, 3);
-    Push(&list, 8, 11);
+    Push(&list, 8, 6);
+    Push(&list, 100, -2);
     list = Pop(list);   // Получение значения и нового указателя череди
     printf("%d\n", res);
     list = Pop(list);
@@ -32,14 +57,23 @@ int main()
     printf("%d\n", res);
     list = Pop(list);
     printf("%d\n", res);
+    list = Pop(list);
+    printf("%d\n", res);*/
 
-    Push(&list, 24, 9);
-    Push(&list, 18, 11);
-        list = Pop(list);
-    printf("%d\n", res);
+
+    ret:
     list = Pop(list);
     printf("%d\n", res);
+    return 0;
 
+    print:
+    for(int j = 0; j < i; j++)
+    {
+    list = Pop(list);
+    printf("%d\n", res);
+    }
+    /*Pop(list);
+    printf("%d\n", res);*/
 
     return 0;
 }
