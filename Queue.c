@@ -10,28 +10,38 @@ int res = 0;    // Результат извлеения из очереди
 
 int main()
 {
-    int a = 10;
+    int elem = 0, cont = 0;
 
-    struct Queue *list = init(a);   // Инициализация очереди
-    Push(&list, a); // Добавление значения в очередь
-    list = Pop(list);   // Получение значения и нового указателя череди
-    printf("%d\n", res);
-    Push(&list, 5);
-    list = Pop(list);
-    printf("%d\n", res);
-    list = Pop(list);
-    printf("%d\n", res);
-    Push(&list, 6);
-    Push(&list, a);
-    list = Pop(list);
-    printf("%d\n", res);
-    list = Pop(list);
-    printf("%d\n", res);
-    Push(&list, -70);
-    list = Pop(list);
-    printf("%d\n", res);
+    printf("\t# Queue #\n");
+    printf("Enter element: ");
+    scanf("%d", &elem);
+    struct Queue *list = init(elem);   // Инициализация очереди
+    printf("Continue(any integer) or not(0): ");
+    scanf("%d", &cont);
+    if(cont == 0) goto printing;
 
+    while(cont != 0)
+    {
+        printf("Enter element: ");
+        scanf("%d", &elem);
+        Push(&list, elem);
+        printf("Continue(any integer) or not(0): ");
+        scanf("%d", &cont);
+    }
+    printf("+----------+\n| elements |\n+----------+\n");
+    while(list != NULL)
+    {
+        list = Pop(list);
+        printf("|%9d |\n+----------+\n", res);
+    }
+    goto ret;
 
+    printing:
+    list = Pop(list);
+    printf("+----------+\n|  element |\n+----------+\n");
+    printf("|%9d |\n+----------+\n", res);
+
+    ret:
     return 0;
 }
 

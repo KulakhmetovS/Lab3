@@ -10,41 +10,42 @@ int Pop(struct Stack *);   // Чтение элемента из очереди 
 
 int main()
 {
-    int a = 10;
-    int result = 0;
+    int result = 0, elem = 0, cont = 0, size = 0;
 
-    struct Stack *list = init(a);   // Инициализация очереди
-    Push(&list, 5); // Добавление значения в очередь
-    Push(&list, 6);
-    Push(&list, 7);
-    result = Pop(list);   // Получение значения
-    printf("%d\n", result);
-    result = Pop(list);
-    printf("%d\n", result);
-    result = Pop(list);
-    printf("%d\n", result);
-    Push(&list, 8);
-    result = Pop(list);
-    printf("%d\n", result);
-    result = Pop(list);
-    printf("%d\n", result);
-    Push(&list, 9);
-    Push(&list, 11);
-    result = Pop(list);
-    printf("%d\n", result);
-    result = Pop(list);
-    printf("%d\n", result);
-    Push(&list, -13);
-    Push(&list, -99);
-    result = Pop(list);
-    printf("%d\n", result);
-    result = Pop(list);
-    printf("%d\n", result);
-    Push(&list, 1);
-    result = Pop(list);
-    printf("%d\n", result);
+    printf("\t# Stack #\n");
+    printf("Enter element: ");
+    scanf("%d", &elem);
+    struct Stack *list = init(elem);   // Инициализация очереди
+    printf("Continue(any integer) or not(0): ");
+    scanf("%d", &cont);
 
+    if(cont == 0) goto printing;
 
+    while(cont != 0)
+    {
+        printf("Enter element: ");
+        scanf("%d", &elem);
+        Push(&list, elem);
+        printf("Continue(any integer) or not(0): ");
+        scanf("%d", &cont);
+        size++;
+    }
+
+    printf("+----------+\n| elements |\n+----------+\n");
+    for(int i = 0; i <= size; i++)
+    {
+        result = Pop(list);
+        printf("|%9d |\n+----------+\n", result);
+    }
+
+    goto ret;
+
+    printing:
+    result = Pop(list);
+    printf("+----------+\n|  element |\n+----------+\n");
+    printf("|%9d |\n+----------+\n", result);
+
+    ret:
     return 0;
 }
 
