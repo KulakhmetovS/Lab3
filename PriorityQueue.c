@@ -6,72 +6,87 @@ struct Queue *init(int, int);    // Инициализация очереди
 void Push(struct Queue **, int, int);    // Добавление элемента в очередь
 struct Queue *Priority(struct Queue *);  // Сортировка элементов в соответствии с их приоритетом
 struct Queue *QueueSort(struct Queue *, int);   //Создание отсортированной очереди
-struct Queue *Pop(struct Queue *);   // Чтение элемента из очереди с последующим удалением
+struct Queue *Pop(struct Queue *);   // Чтение элемента из очереди
+struct Queue *DeleteElement(struct Queue *, int, int);  // Удаление элемента
+void DeleteQueue(struct Queue *);   // Удаление всей очереди
 
 int res = 0;    // Результат извлечения из очереди
 int pr = 0; // Результат извлечения приоритета
-int *array; // Указатель на массив с приоритетами
+int array[1000]; // Указатель на массив с приоритетами
+
 
 int main()
 {
-    int element = 0, prio = 0, cont = 0;
-    struct Queue *list = NULL;  // Указатель на начало очереди
+    float operation = 0;
+    struct Queue *list = NULL, *sortq = NULL;
+    int element = 0, priority = 0;
 
-    printf("\t# Priority Queue #\n");
-    init:   // Метка на случай, если приоритет =< 0
-    printf("Enter integer and priority(>0): ");
-    scanf("%d%d", &element, &prio);
-    if(prio > 0)
+    printf(" # Priority Queue #\n\n\tMenu\n");
+    printf(" 1 - add new element\n 2 - see list\n 3 - delete element\n 4 - delete queue\n 0 - quit\n");
+
+    while(1)
     {
-        list = init(element, prio);   // Инициализация очереди
-    }
-    else
-    {
-        printf("priority must be more than 0\n");
-        goto init;
-    }
-
-    printf("Continue(any integer) or not(0): ");
-    scanf("%d", &cont);
-    if(cont == 0) goto printing;
-
-    while(cont != 0)
-    {
-        entering:   // Метка на случай, если приоритет =< 0
-        printf("Enter integer and priority(>0): ");
-        scanf("%d%d", &element, &prio);
-
-        if(prio > 0)
+        label:
+        printf("Choose operation: ");
+        scanf("%f", &operation);
+        if((operation > 4) || (operation < 0))
         {
-            Push(&list, element, prio);
+            printf("Invalid operation! Try again\n");
+            goto label;
+        }
+        else if(operation == 0) // Окончание программы
+        {
+            break;
+        }
+        else if(operation == 1) // Ввод элементов в приоритетную очередь
+        {
+            entering:
+            printf("Enter element(any integer) and priority(>0): ");
+            scanf("%d%d", &element, &priority);
+            if(priority <= 0)
+            {
+                printf("priority must be more than 0!\n");
+                goto entering;
+            }
+            Push(&list, element, priority);
+        }
+        else if(operation == 2) // Вывод всей очереди
+        {
+            if(list == NULL)
+            {
+                printf("list is empty\n");
+                goto label;
+            }
+            list = Priority(list);
+            sortq = list;
+            printf("+----------+----------+\n| elements | priority |\n+----------+----------+\n");
+            while(list != NULL)
+            {
+                list = Pop(list);
+                printf("|%9d |%9d |\n+----------+----------+\n", res, pr);
+            }
+            list = sortq;
+        }
+        else if(operation == 3) // Удвление элемента очереди
+        {
+            printf("Enter element and priority you need to delete: ");
+            scanf("%d%d", &element, &priority);
+            list = DeleteElement(list, element, priority);
+        }
+        else if(operation == 4) // Удвление всей очереди
+        {
+            list = Priority(list);
+            DeleteQueue(list);
+            list = NULL;
         }
         else
         {
-            printf("priority must be more than 0\n");
-            goto entering;
+            printf("Invalid operation\n");
+            goto label;
         }
-
-        printf("Continue(any integer) or not(0): ");
-        scanf("%d", &cont);
-        if(cont == 0) break;
     }
 
-    // Вывод отсортированной очереди
-    printf("+----------+----------+\n| elements | priority |\n+----------+----------+\n");
-    while(list != NULL)
-    {
-        list = Pop(list);
-        printf("|%9d |%9d |\n+----------+----------+\n", res, pr);
-    }
 
-    goto ret;
-
-    printing:
-    printf("+----------+----------+\n| element  | priority |\n+----------+----------+\n");
-    Pop(list);
-    printf("|%9d |%9d |\n+----------+----------+\n", res, pr);
-
-    ret:
     return 0;
 }
 
@@ -131,7 +146,7 @@ struct Queue *Priority(struct Queue *list)
     }
     tmp = list;
 
-    array = calloc(num, 4);  // Создаём массив приоритетов
+    //array = calloc(num, 4);  // Создаём массив приоритетов
 
     for(j = 0; j < num; j++)
     {
@@ -165,7 +180,7 @@ struct Queue *Priority(struct Queue *list)
 struct Queue *QueueSort(struct Queue *list, int size)
 {
     struct Queue *tmp = list, *pointer = NULL;
-    int *arr = calloc(size, 4), i = 0;  // Создаём массив для элементов
+    int i = 0;  // Создаём массив для элементов
 
     // Проходим по массиву и списку, сравнивая приоритеты
     for(i = 0; i < size; i++)
@@ -183,8 +198,8 @@ struct Queue *QueueSort(struct Queue *list, int size)
     }
 
     // Освобождаем память
-    free(arr);
-    free(array);
+    //free(arr);
+    //free(array);
 
     while(list != NULL)
     {
@@ -198,13 +213,82 @@ struct Queue *QueueSort(struct Queue *list, int size)
 
 struct Queue *Pop(struct Queue *list)
 {
-    list = Priority(list);
     res = list -> data; // Получение элемента очереди
     pr = list -> priority;  // Получение приоритета элемента очереди
 
-    struct Queue *to_delete = list; // Переназначение указателя на первый элемент
+    //struct Queue *to_delete = sortq; // Переназначение указателя на первый элемент
     list = list -> next;    //Переназначение первого указателя на следующий
-    free(to_delete);    // Очистка памяти по предыдущему указателю
+    //free(to_delete);    // Очистка памяти по предыдущему указателю
 
     return list;    // Возвращение нового указателя на вершину очереди
+}
+
+struct Queue *DeleteElement(struct Queue *list, int element, int prio)
+{
+    if(list == NULL)
+    {
+        printf("List is empty");
+        return list;
+    }
+
+    struct Queue *tmp = list, *head = NULL, *prev = NULL;
+    int flag = 0;
+
+    if((tmp -> data == element) && (tmp -> priority == prio))
+    {
+        head = tmp;
+        tmp = tmp -> next;
+        free(head);
+        list = tmp;
+        flag = 1;
+    }
+    else
+    {
+        prev = tmp;
+        head = tmp -> next;
+    }
+
+    while(head != NULL)
+    {
+        if((head -> data == element) && (head -> priority == prio))
+        {
+            if(head -> next != NULL)
+            {
+                prev -> next = head -> next;
+                free(head);
+                head = prev -> next;
+                flag = 1;
+            }
+            else
+            {
+                prev -> next = NULL;
+                free(head);
+                flag = 1;
+            }
+        }
+        else
+        {
+            prev = head;
+            head = head -> next;
+        }
+    }
+
+    if(flag == 0)
+    {
+        printf("Element not found!\n");
+    }
+
+    return list;
+}
+
+void DeleteQueue(struct Queue *list)
+{
+    struct Queue *to_delete = NULL;
+    while(list != NULL)
+    {
+        to_delete = list; // Переназначение указателя на первый элемент
+        list = list -> next;    //Переназначение первого указателя на следующий
+        free(to_delete);    // Очистка памяти по предыдущему указателю
+    }
+    printf("list deleted\n");
 }

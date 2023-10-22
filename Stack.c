@@ -5,47 +5,71 @@
 struct Stack;   // Структура, отвечающая за элементы очереди
 struct Stack *init(int);    // Инициализация очереди
 void Push(struct Stack **, int);    // Добавление элемента в очередь
-int Pop(struct Stack *);   // Чтение элемента из очереди с последующим удалением
+//int Pop(struct Stack *);   // Чтение элемента из очереди с последующим удалением
+void Printing(struct Stack *);
+struct Stack *DeleteElement(struct Stack *, int);  // Удаление элемента
+void DeleteStack(struct Stack *);   // Удаление всей очереди
 
 
 int main()
 {
-    int result = 0, elem = 0, cont = 0, size = 0;
+    int element = 0;
+    struct Stack *list = NULL, *pointer = NULL;
+    float operation = 0;
 
-    printf("\t# Stack #\n");
-    printf("Enter element: ");
-    scanf("%d", &elem);
-    struct Stack *list = init(elem);   // Инициализация очереди
-    printf("Continue(any integer) or not(0): ");
-    scanf("%d", &cont);
+    printf(" # Stack #\n\n\tMenu\n");
+    printf(" 1 - add new element\n 2 - see list\n 3 - delete element\n 4 - delete queue\n 0 - quit\n");
 
-    if(cont == 0) goto printing;
-
-    while(cont != 0)
+    while(1)
     {
-        printf("Enter element: ");
-        scanf("%d", &elem);
-        Push(&list, elem);
-        printf("Continue(any integer) or not(0): ");
-        scanf("%d", &cont);
-        size++;
+        label:
+        printf("Choose operation: ");
+        scanf("%f", &operation);
+        if((operation > 4) || (operation < 0))
+        {
+            printf("Invalid operation! Try again\n");
+            goto label;
+        }
+        else if(operation == 0) // Окончание программы
+        {
+            break;
+        }
+        else if(operation == 1) // Ввод элементов в приоритетную очередь
+        {
+            printf("Enter element(any integer): ");
+            scanf("%d", &element);
+            Push(&list, element);
+        }
+        else if(operation == 2) // Вывод всей очереди
+        {
+            if(list == NULL)
+            {
+                printf("list is empty\n");
+                goto label;
+            }
+            pointer = list;
+            Printing(list);
+            list = pointer;
+        }
+        else if(operation == 3) // Удвление элемента очереди
+        {
+            printf("Enter element you need to delete: ");
+            scanf("%d", &element);
+            list = DeleteElement(list, element);
+        }
+        else if(operation == 4) // Удвление всей очереди
+        {
+            DeleteStack(list);
+            list = NULL;
+        }
+        else
+        {
+            printf("Invalid operation\n");
+            goto label;
+        }
     }
 
-    printf("+----------+\n| elements |\n+----------+\n");
-    for(int i = 0; i <= size; i++)
-    {
-        result = Pop(list);
-        printf("|%9d |\n+----------+\n", result);
-    }
 
-    goto ret;
-
-    printing:
-    result = Pop(list);
-    printf("+----------+\n|  element |\n+----------+\n");
-    printf("|%9d |\n+----------+\n", result);
-
-    ret:
     return 0;
 }
 
@@ -74,9 +98,11 @@ struct Stack *init(int element)
 
 void Push(struct Stack **list ,int element)
 {
-    struct Stack *new_element = init(element);  // Создание нового элемента
-
     struct Stack *tmp = *list;  // Сохранение оригинального указателя на голову
+
+    if(tmp != NULL)
+    {
+    struct Stack *new_element = init(element);  // Создание нового элемента
 
     while(tmp -> next != NULL)
     {
@@ -84,34 +110,106 @@ void Push(struct Stack **list ,int element)
     }
 
     tmp -> next = new_element;
+    }
+
+    else if(tmp == NULL)    // Инициализация списка, если его нет
+    {
+        *list = init(element);
+    }
 }
 
-int Pop(struct Stack *list)
+void Printing(struct Stack *list)
 {
-    int res = 0;    // Результат извлеения из очереди
     int i = 0, j;   // Переменные счётчики числа элементов стека
-    struct Stack *tmp = list, *p = list;   // Сохранение указателя на вершину стека
+    struct Stack *tmp = list;   // Сохранение указателя на вершину стека
 
-    while(list -> next != NULL) // Обход списка
+    while(tmp != NULL) // Обход списка
     {
-        list = list -> next;
+        tmp = tmp -> next;
         i++;
     }
     i--;
 
-    res = list -> data; // Получение элемента стека
-
-    struct Stack *to_delete = list; // Переназначение указателя на последний элемент
-
-    for(j = 0; j < i; j++)
+    tmp = list;
+    printf("+----------+\n| elements |\n+----------+\n");
+    while(i >= 0)
     {
-    tmp = tmp -> next;    // Очередной обход списка до предпоследнего элемента
+        for(j = 0; j < i; j++)
+        {
+            tmp = tmp -> next;
+        }
+        printf("|%9d |\n+----------+\n", tmp -> data);
+        tmp = list;
+        i--;
+    }
+}
+
+void DeleteStack(struct Stack *list)
+{
+    struct Stack *to_delete = NULL;
+    while(list != NULL)
+    {
+        to_delete = list; // Переназначение указателя на первый элемент
+        list = list -> next;    //Переназначение первого указателя на следующий
+        free(to_delete);    // Очистка памяти по предыдущему указателю
+    }
+    printf("list deleted\n");
+}
+
+struct Stack *DeleteElement(struct Stack *list, int elem)
+{
+if(list == NULL)
+    {
+        printf("List is empty");
+        return list;
     }
 
-    tmp -> next = NULL; // Присвоение предпоследнему элементу нулевого указателя
+    struct Stack *tmp = list, *head = NULL, *prev = NULL;
+    int flag = 0;
 
-    // Сохранение первого листа списка
-    if(p -> next != NULL) free(to_delete);    // Очистка памяти по последнему указателю
+    if(tmp -> data == elem)
+    {
+        head = tmp;
+        tmp = tmp -> next;
+        free(head);
+        list = tmp;
+        flag = 1;
+    }
+    else
+    {
+        prev = tmp;
+        head = tmp -> next;
+    }
 
-    return res;    // Возвращение значения
+    while(head != NULL)
+    {
+        if(head -> data == elem)
+        {
+            if(head -> next != NULL)
+            {
+                prev -> next = head -> next;
+                free(head);
+                head = prev -> next;
+                flag = 1;
+            }
+            else
+            {
+                prev -> next = NULL;
+                free(head);
+                flag = 1;
+            }
+        }
+        else
+        {
+            prev = head;
+            head = head -> next;
+        }
+    }
+
+    if(flag == 0)
+    {
+        printf("Element not found!\n");
+    }
+
+    return list;
 }
