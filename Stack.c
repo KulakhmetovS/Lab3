@@ -5,7 +5,7 @@
 struct Stack;   // Структура, отвечающая за элементы очереди
 struct Stack *init(int);    // Инициализация очереди
 void Push(struct Stack **, int);    // Добавление элемента в очередь
-//int Pop(struct Stack *);   // Чтение элемента из очереди с последующим удалением
+int Pop(struct Stack *);   // Чтение элемента из очереди с последующим удалением
 void Printing(struct Stack *);
 struct Stack *DeleteElement(struct Stack *, int);  // Удаление элемента
 void DeleteStack(struct Stack *);   // Удаление всей очереди
@@ -13,19 +13,19 @@ void DeleteStack(struct Stack *);   // Удаление всей очереди
 
 int main()
 {
-    int element = 0;
+    int element = 0, result = 0;
     struct Stack *list = NULL, *pointer = NULL;
     float operation = 0;
 
     printf(" # Stack #\n\n\tMenu\n");
-    printf(" 1 - add new element\n 2 - see list\n 3 - delete element\n 4 - delete queue\n 0 - quit\n");
+    printf(" 1 - add new element\n 2 - see list\n 3 - delete element\n 4 - delete queue\n 0 - quit \n 5 - Pop\n");
 
     while(1)
     {
         label:
         printf("Choose operation: ");
         scanf("%f", &operation);
-        if((operation > 4) || (operation < 0))
+        if((operation > 5) || (operation < 0))
         {
             printf("Invalid operation! Try again\n");
             goto label;
@@ -61,6 +61,11 @@ int main()
         {
             DeleteStack(list);
             list = NULL;
+        }
+        else if(operation == 5) // Удвление всей очереди
+        {
+            result = Pop(list);
+            printf("Eject element: %d\n", result);
         }
         else
         {
@@ -174,6 +179,7 @@ if(list == NULL)
         free(head);
         list = tmp;
         flag = 1;
+        return list;
     }
     else
     {
@@ -191,12 +197,14 @@ if(list == NULL)
                 free(head);
                 head = prev -> next;
                 flag = 1;
+                return list;
             }
             else
             {
                 prev -> next = NULL;
                 free(head);
                 flag = 1;
+                return list;
             }
         }
         else
@@ -212,4 +220,34 @@ if(list == NULL)
     }
 
     return list;
+}
+
+int Pop(struct Stack *list)
+{
+    int res = 0;    // Результат извлеения из очереди
+    int i = 0, j;   // Переменные счётчики числа элементов стека
+    struct Stack *tmp = list, *p = list;   // Сохранение указателя на вершину стека
+
+    while(list -> next != NULL) // Обход списка
+    {
+        list = list -> next;
+        i++;
+    }
+    i--;
+
+    res = list -> data; // Получение элемента стека
+
+    struct Stack *to_delete = list; // Переназначение указателя на последний элемент
+
+    for(j = 0; j < i; j++)
+    {
+    tmp = tmp -> next;    // Очередной обход списка до предпоследнего элемента
+    }
+
+    tmp -> next = NULL; // Присвоение предпоследнему элементу нулевого указателя
+
+    // Сохранение первого листа списка
+    if(p -> next != NULL) free(to_delete);    // Очистка памяти по последнему указателю
+
+    return res;    // Возвращение значения
 }

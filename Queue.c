@@ -150,6 +150,7 @@ if(list == NULL)
         free(head);
         list = tmp;
         flag = 1;
+        return list;
     }
     else
     {
@@ -167,12 +168,14 @@ if(list == NULL)
                 free(head);
                 head = prev -> next;
                 flag = 1;
+                return list;
             }
             else
             {
                 prev -> next = NULL;
                 free(head);
                 flag = 1;
+                return list;
             }
         }
         else
